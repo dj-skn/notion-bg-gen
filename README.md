@@ -28,6 +28,7 @@ The **Notion Background Generator** is a Python-based tool designed to create st
   - `numpy`
   - `colorama`
   - `inquirer`
+  - `halo`
 
 Install dependencies using:
 
