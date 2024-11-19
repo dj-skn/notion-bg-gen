@@ -77,4 +77,3 @@ def generate_gradient(text, dark_mode, output_file):
 
     # Save the final image
     final_layer.convert("RGB").save(output_file)
-    print(f"Gradient saved as {output_file}")
