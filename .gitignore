@@ -1,1 +1,5 @@
+# Exclude all files in the backgrounds folder
 /backgrounds/*
+
+# Exclude the virtual environment directory
+venv/
