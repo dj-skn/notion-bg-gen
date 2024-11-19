@@ -78,7 +78,7 @@ def generate_gradient(text, dark_mode, output_file):
     # 7. Add grain effect
     noise = np.random.normal(0, 25, (height, width, 3)).astype(np.uint8)
     noise_image = Image.fromarray(noise, 'RGB')
-    final_image = Image.blend(final_layer.convert("RGB"), noise_image, 0.1)
+    final_image = Image.blend(final_layer.convert("RGB"), noise_image, 0.05)
 
     # Save the final image
     final_image.save(output_file)
