@@ -2,9 +2,9 @@
 
 ## ✨ Overview
 
-The **Notion Background Generator** is a Python-based tool designed to create stunning, customizable mesh gradient backgrounds with text overlays. It offers a vibrant design experience, allowing you to adjust colors, gradient intensity, and text, making it perfect for page covers, banners, and more.
-
 ![Example Image](https://i.imgur.com/1QzNzRD.png)
+
+The **Notion Background Generator** is a Python-based tool designed to create stunning, customizable mesh gradient backgrounds with text overlays. It offers a vibrant design experience, allowing you to adjust colors, gradient intensity, and text, making it perfect for page covers, banners, and more.
 
 ---
 
