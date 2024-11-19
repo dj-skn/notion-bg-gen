@@ -2,4 +2,4 @@
 /backgrounds/*
 
 # Exclude the virtual environment directory
-venv/
+/venv/
