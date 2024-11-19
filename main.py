@@ -10,7 +10,7 @@ def main():
 
     # Step 2: Process each cover
     for i, user_inputs in enumerate(user_inputs_list, start=1):
-        print(Fore.CYAN + Style.BRIGHT + f"\nGenerating cover {i}/{len(user_inputs_list)}...")
+        print(Fore.CYAN + Style.BRIGHT + f"\nGenerating Cover {i}/{len(user_inputs_list)}...")
 
         # Step 3: Use a spinner while generating the gradient
         spinner = Halo(text=f"Generating gradient for cover {i}...", spinner="dots")
@@ -19,12 +19,12 @@ def main():
         try:
             # Step 4: Generate the gradient with text
             generate_gradient(**user_inputs)
-            spinner.succeed(Fore.GREEN + f"Cover {i} successfully generated!")
-            print(Style.BRIGHT + "Cover location: " + Style.NORMAL + user_inputs["output_file"])
+            spinner.succeed(Style.BRIGHT + f"Cover {i} successfully generated!")
+            print(Style.BRIGHT + Fore.GREEN + "→ " + Fore.WHITE + "Cover location: " + Style.NORMAL + user_inputs["output_file"])
         except Exception as e:
             spinner.fail(Fore.RED + f"An error occurred while generating cover {i}: {e}")
 
-    print(Fore.CYAN + Style.BRIGHT + "\nAll covers have been successfully generated!")
+    print(Fore.GREEN + Style.BRIGHT + "\nAll covers have been successfully generated!")
 
 if __name__ == "__main__":
     main()

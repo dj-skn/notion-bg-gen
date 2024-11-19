@@ -51,7 +51,7 @@ def generate_gradient(text, dark_mode, output_file):
 
     # 6. Add text on top with tracking-tight effect
     try:
-        font = ImageFont.truetype("Inter-Bold.ttf", 72)
+        font = ImageFont.truetype("/assets/Inter-Bold.ttf", 72)
     except IOError:
         print("Font not found. Ensure 'Inter-Bold.ttf' is in the project directory.")
         return
