@@ -1,3 +1,5 @@
+import os
+
 def get_user_input():
     """
     Collects and validates user input for the gradient generator.
@@ -25,6 +27,13 @@ def get_user_input():
     if not output_file.endswith(".png"):
         print("Output file must be a .png file. Adding '.png' extension.")
         output_file += ".png"
+
+    # Set default directory for outputs
+    output_dir = "backgrounds"
+    os.makedirs(output_dir, exist_ok=True)  # Ensure the directory exists
+
+    # Prepend the output directory to the user-provided file name
+    output_file = os.path.join(output_dir, output_file)
 
     return {
         "text": text,
