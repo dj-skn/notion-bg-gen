@@ -1,8 +1,10 @@
 import os
 import inquirer
+import colorama
 from colorama import Fore, Style
 from inquirer.themes import GreenPassion
 
+colorama.init(autoreset=True)
 
 def get_next_available_filename(base_name, directory):
     """
@@ -68,8 +70,8 @@ def get_user_input():
     # Collect inputs for each cover
     user_inputs_list = []
     for i in range(1, num_covers + 1):
-        print(Fore.MAGENTA + f"\nCover {i}/{num_covers}:")
-        text = input(Fore.WHITE + Style.BRIGHT + "Enter text (leave blank for no text): ").strip() or " "
+        print(Fore.YELLOW + f"\nCover {i}/{num_covers}:")
+        text = input(Fore.WHITE + Style.BRIGHT + "Enter cover text " + Style.NORMAL + Style.DIM + "(empty for none)" + Style.RESET_ALL  + ": " ).strip() or " "
 
         # Get output file name
         output_file = input(Fore.YELLOW + "Output name (leave blank for default): ").strip()
