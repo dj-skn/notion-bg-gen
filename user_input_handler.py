@@ -6,25 +6,32 @@ from inquirer.themes import GreenPassion
 
 colorama.init(autoreset=True)
 
-def get_next_available_filename(base_name, directory):
+def get_next_available_filename(base_name, directory, index):
     """
     Generate the next available file name if the base name exists.
+
+    Args:
+        base_name (str): The base file name without the index.
+        directory (str): The directory to check for existing files.
+        index (int): The current index for naming.
+
+    Returns:
+        str: The next available file name with an appended index.
     """
-    if not os.path.exists(os.path.join(directory, base_name)):
-        return base_name
-
-    name, ext = os.path.splitext(base_name)
-    counter = 2
-
-    while os.path.exists(os.path.join(directory, f"{name}-{counter}{ext}")):
-        counter += 1
-
-    return f"{name}-{counter}{ext}"
+    name = f"{base_name}-{index}"
+    ext = ".png"
+    while os.path.exists(os.path.join(directory, f"{name}{ext}")):
+        index += 1
+        name = f"{base_name}-{index}"
+    return f"{name}{ext}"
 
 
 def get_user_input():
     """
     Collects and validates user input for the gradient generator.
+
+    Returns:
+        list: A list of dictionaries containing user inputs for each cover.
     """
     print(Fore.CYAN + Style.BRIGHT + """
  _   _       _   _             
@@ -67,24 +74,35 @@ def get_user_input():
     ]
     dark_mode = inquirer.prompt(mode_question, theme=GreenPassion())["dark_mode"] == "Dark"
 
+    # Ask if the user wants custom output names
+    custom_name_question = [
+        inquirer.List(
+            "custom_name",
+            message="Custom output name?",
+            choices=["Yes", "No"],
+            default="No",
+        )
+    ]
+    use_custom_name = inquirer.prompt(custom_name_question, theme=GreenPassion())["custom_name"] == "Yes"
+
+    # Get base name if custom output name is selected
+    if use_custom_name:
+        base_name = input(Fore.YELLOW + "Enter base name (e.g., 'custom-cover'): ").strip() or "custom-cover"
+    else:
+        base_name = "page"
+
+    # Ensure the output directory exists
+    output_dir = "backgrounds"
+    os.makedirs(output_dir, exist_ok=True)
+
     # Collect inputs for each cover
     user_inputs_list = []
     for i in range(1, num_covers + 1):
-        print(Fore.YELLOW + f"\nCover {i}/{num_covers}:")
-        text = input(Fore.WHITE + Style.BRIGHT + "Enter cover text " + Style.NORMAL + Style.DIM + "(empty for none)" + Style.RESET_ALL  + ": " ).strip() or " "
-
-        # Get output file name
-        output_file = input(Fore.YELLOW + "Output name (leave blank for default): ").strip()
-        if not output_file:
-            output_file = f"page-cover-{i}.png"
-
-        if not output_file.endswith(".png"):
-            output_file += ".png"
-
-        # Ensure the directory exists and generate a unique file name
-        output_dir = "backgrounds"
-        os.makedirs(output_dir, exist_ok=True)
-        output_file = os.path.join(output_dir, get_next_available_filename(output_file, output_dir))
+        print(Fore.CYAN + Style.BRIGHT + f"\nCover {i}/{num_covers}:")
+        text = input(Fore.WHITE + Style.BRIGHT + "Enter cover text " + Style.NORMAL + Style.DIM + "(empty for none)" + Style.RESET_ALL + ": ").strip() or " "
+        
+        # Generate the output file name
+        output_file = os.path.join(output_dir, get_next_available_filename(base_name, output_dir, i))
 
         user_inputs_list.append({
             "text": text,
