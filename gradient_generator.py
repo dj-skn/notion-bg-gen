@@ -1,6 +1,6 @@
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import random
-
+import numpy as np
 
 def generate_gradient(text, dark_mode, output_file):
     """Generates a mesh-like gradient image with text in the middle of the gradient."""
@@ -75,5 +75,10 @@ def generate_gradient(text, dark_mode, output_file):
         draw.text((x, text_y), char, font=font, fill=text_color)
         x += char_width + tracking_adjustment  # Move x forward with tracking adjustment
 
+    # 7. Add grain effect
+    noise = np.random.normal(0, 25, (height, width, 3)).astype(np.uint8)
+    noise_image = Image.fromarray(noise, 'RGB')
+    final_image = Image.blend(final_layer.convert("RGB"), noise_image, 0.1)
+
     # Save the final image
-    final_layer.convert("RGB").save(output_file)
+    final_image.save(output_file)
