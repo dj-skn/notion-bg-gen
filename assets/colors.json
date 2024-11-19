@@ -32,5 +32,11 @@
     "#FF8E00",
     "#CF00FF",
     "#30FF1A"
-  ]
+  ],
+  "base_colors": {
+    "dark_background": "#09090b",
+    "light_background": "#fafafa",
+    "dark_text": "#fafafa",
+    "light_text": "#09090b"
+  }
 }
