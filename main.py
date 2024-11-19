@@ -2,7 +2,6 @@ from user_input_handler import get_user_input
 from gradient_generator import generate_gradient
 from halo import Halo
 from colorama import Fore, Style
-import time
 
 def main():
     # Step 1: Get user inputs
