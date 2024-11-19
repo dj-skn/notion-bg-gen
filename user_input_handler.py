@@ -34,7 +34,7 @@ def get_user_input():
     Collects and validates user input for the gradient generator.
 
     Returns:
-        dict: A dictionary containing user inputs.
+        list[dict]: A list of dictionaries containing user inputs for each cover.
     """
     # Print the title
     print(Fore.CYAN + Style.BRIGHT + """
@@ -43,70 +43,79 @@ def get_user_input():
 |  \| |/ _ \| __| |/ _ \| '_ \ 
 | |\  | (_) | |_| | (_) | | | |
 |_|_\_|\___/ \__|_|\___/|_| |_|
-  _____                        
- / ___|_____   _____ _ __      
-| |   / _ \ \ / / _ \ '__|     
-| |__| (_) \ V /  __/ |        
- \____\___/ \_/ \___|_|        
-  _____                    
- / ___| ___ _ __               
-| |  _ / _ \ '_ \              
-| |_| |  __/ | | |             
- \____|\___|_| |_|             
     """)
 
     print("-" * 75)
     print("\n")
 
-    # Get text input
-    text = input(Fore.WHITE + Style.BRIGHT + "Enter page name: ").strip()
-    if not text:
-        print(Fore.YELLOW + "Page name empty. Using a clear version.")
-        text = " "  # Set text to a single space to ensure no visible text
+    # Get the number of covers to create
+    while True:
+        try:
+            num_covers = int(input(Fore.YELLOW + "How many covers do you want to create? ").strip())
+            if num_covers > 0:
+                break
+            else:
+                print(Fore.RED + "Please enter a positive number.")
+        except ValueError:
+            print(Fore.RED + "Invalid input. Please enter a number.")
 
     # Get background mode (dark/light) using arrow keys
     mode_question = [
         inquirer.List(
             "dark_mode",
-            message="Choose the background mode",
-            choices=["Dark Mode", "Light Mode"],
-            default="Dark Mode",
+            message="Background mode:",
+            choices=["Dark", "Light"],
+            default="Dark",
         )
     ]
     answers = inquirer.prompt(mode_question)
-    dark_mode = answers["dark_mode"] == "Dark Mode"
+    dark_mode = answers["dark_mode"] == "Dark"
 
     # Ask if the user wants to provide a custom file name
     custom_name_question = [
         inquirer.Confirm(
             "custom_name",
-            message="Do you want to provide a custom file name?",
+            message="Custom file names?",
             default=False,
         )
     ]
     custom_name_answer = inquirer.prompt(custom_name_question)["custom_name"]
 
-    # Handle file name input
-    if custom_name_answer:
-        output_file = input("Enter custom output name (or leave blank for default): ").strip()
-        if not output_file:
-            output_file = "page-cover.png"
-    else:
-        output_file = "page-cover.png"
+    # Collect inputs for each cover
+    user_inputs = []
+    for i in range(1, num_covers + 1):
+        print(Fore.CYAN + f"\n--- Page {i} ---")
+        
+        # Get page text
+        text = input(Fore.WHITE + Style.BRIGHT + f"Enter text for page {i} (leave blank for no text): ").strip()
+        if not text:
+            print(Fore.YELLOW + f"Page {i} text empty. Using a clear version.")
+            text = " "  # Set text to a single space to ensure no visible text
 
-    if not output_file.endswith(".png"):
-        print(Fore.YELLOW + "Output file must be a .png file. Adding '.png' extension.")
-        output_file += ".png"
+        # Handle file name input
+        if custom_name_answer:
+            output_file = input(Fore.GREEN + f"File name for page {i}: ").strip()
+            if not output_file:
+                output_file = f"page-{i}-cover.png"
+        else:
+            output_file = f"page-{i}-cover.png"
 
-    # Set default directory for outputs
-    output_dir = "backgrounds"
-    os.makedirs(output_dir, exist_ok=True)  # Ensure the directory exists
+        if not output_file.endswith(".png"):
+            print(Fore.YELLOW + "Adding '.png' extension.")
+            output_file += ".png"
 
-    # Generate the next available file name if the specified one exists
-    output_file = os.path.join(output_dir, get_next_available_filename(output_file, output_dir))
+        # Set default directory for outputs
+        output_dir = "backgrounds"
+        os.makedirs(output_dir, exist_ok=True)  # Ensure the directory exists
 
-    return {
-        "text": text,
-        "dark_mode": dark_mode,
-        "output_file": output_file,
-    }
+        # Generate the next available file name if the specified one exists
+        output_file = os.path.join(output_dir, get_next_available_filename(output_file, output_dir))
+
+        # Store inputs for this cover
+        user_inputs.append({
+            "text": text,
+            "dark_mode": dark_mode,
+            "output_file": output_file,
+        })
+
+    return user_inputs
