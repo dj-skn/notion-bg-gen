@@ -61,7 +61,8 @@ def get_user_input():
     # Get text input
     text = input(Fore.WHITE + Style.BRIGHT + "Enter page name: ").strip()
     if not text:
-        raise ValueError("Text cannot be empty!")
+        print(Fore.YELLOW + "Page name empty. Using a clear version.")
+        text = " "  # Set text to a single space to ensure no visible text
 
     # Get background mode (dark/light) using arrow keys
     mode_question = [
@@ -75,12 +76,22 @@ def get_user_input():
     answers = inquirer.prompt(mode_question)
     dark_mode = answers["dark_mode"] == "Dark Mode"
 
-    # Get output file name
-    print(Fore.GREEN + "\nAlmost done!")
-    output_file = input("Enter custom output name (or leave blank for default): ").strip()
+    # Ask if the user wants to provide a custom file name
+    custom_name_question = [
+        inquirer.Confirm(
+            "custom_name",
+            message="Do you want to provide a custom file name?",
+            default=False,
+        )
+    ]
+    custom_name_answer = inquirer.prompt(custom_name_question)["custom_name"]
 
-    # Set default file name
-    if not output_file:
+    # Handle file name input
+    if custom_name_answer:
+        output_file = input("Enter custom output name (or leave blank for default): ").strip()
+        if not output_file:
+            output_file = "page-cover.png"
+    else:
         output_file = "page-cover.png"
 
     if not output_file.endswith(".png"):
