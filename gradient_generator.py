@@ -102,18 +102,24 @@ def generate_gradient(text, dark_mode, output_file):
         print("Font not found. Ensure 'Inter-Bold.ttf' is in the project directory.")
         return
 
-    # Calculate text positioning and size
+    # Calculate text positioning and tracking
     draw = ImageDraw.Draw(final_layer)
-    text_bbox = draw.textbbox((0, 0), text, font=font)
-    text_width = text_bbox[2] - text_bbox[0]
-    text_height = text_bbox[3] - text_bbox[1]
-    text_x = (width - text_width) // 2
-    text_y = (height - text_height) // 2
+    tracking_adjustment = -3  # Negative value to reduce spacing between letters (tracking-tight)
+    total_width = sum(
+        [draw.textbbox((0, 0), char, font=font)[2] for char in text]
+    ) + tracking_adjustment * (len(text) - 1)
+    text_x = (width - total_width) // 2
+    text_y = (height - draw.textbbox((0, 0), text, font=font)[3]) // 2
 
-    # Draw text on the gradient
-    draw.text((text_x, text_y), text, font=font, fill=text_color)
+    # Draw each character with adjusted tracking
+    x = text_x
+    for char in text:
+        char_bbox = draw.textbbox((0, 0), char, font=font)
+        char_width = char_bbox[2] - char_bbox[0]
+        draw.text((x, text_y), char, font=font, fill=text_color)
+        x += char_width + tracking_adjustment  # Move x forward with tracking adjustment
 
-# 7. Add grain effect
+    # 7. Add grain effect
     noise = np.random.normal(0, 25, (height, width, 3)).astype(np.uint8)
     noise_image = Image.fromarray(noise, 'RGB')
     final_image = Image.blend(final_layer.convert("RGB"), noise_image, 0.05)

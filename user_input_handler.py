@@ -34,24 +34,10 @@ def get_user_input():
         list: A list of dictionaries containing user inputs for each cover.
     """
     print(Fore.CYAN + Style.BRIGHT + """
- _   _       _   _             
-| \ | | ___ | |_(_) ___  _ __  
-|  \| |/ _ \| __| |/ _ \| '_ \ 
-| |\  | (_) | |_| | (_) | | | |
-|_|_\_|\___/ \__|_|\___/|_| |_|
-  _____                        
- / ___|_____   _____ _ __      
-| |   / _ \ \ / / _ \ '__|     
-| |__| (_) \ V /  __/ |        
- \____\___/ \_/ \___|_|        
-  _____                    
- / ___| ___ _ __               
-| |  _ / _ \ '_ \              
-| |_| |  __/ | | |             
- \____|\___|_| |_|             
+╭────────────────────────────────╮
+│      Notion Cover Generator    │
+╰────────────────────────────────╯        
     """)
-    print("-" * 75)
-    print("\n")
 
     # Ask for the number of covers
     num_covers_question = [
