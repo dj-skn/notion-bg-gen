@@ -22,7 +22,7 @@ def load_colors():
 
     if "dark_mode_colors" not in colors or "light_mode_colors" not in colors or "base_colors" not in colors:
         raise ValueError("Colors JSON must include 'dark_mode_colors', 'light_mode_colors', and 'base_colors'.")
-    
+
     return colors
 
 
@@ -48,7 +48,7 @@ def generate_gradient(text, dark_mode, output_file):
 
     # 1. Create a solid background
     base_image = Image.new("RGB", (width, height), color=background_color)
-    
+
     # 2. Create a transparent overlay for the gradient (without blur yet)
     gradient_layer = Image.new("RGBA", (width, height), (0, 0, 0, 0))
 
@@ -97,7 +97,7 @@ def generate_gradient(text, dark_mode, output_file):
 
     # 6. Add text on top
     try:
-        font = ImageFont.truetype("Inter-Bold.ttf", 72)
+        font = ImageFont.truetype("assets/Inter-Bold.ttf", 72)
     except IOError:
         print("Font not found. Ensure 'Inter-Bold.ttf' is in the project directory.")
         return
