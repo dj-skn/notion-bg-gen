@@ -35,7 +35,7 @@ def hex_to_rgb(hex_color):
 def generate_gradient(text, dark_mode, output_file):
     """Generates a mesh-like gradient image with text in the middle of the gradient."""
     # Image size
-    width, height = 1500, 600
+    width, height = 3000, 1200
 
     # Load colors from JSON
     colors = load_colors()
@@ -59,14 +59,14 @@ def generate_gradient(text, dark_mode, output_file):
         center_y = random.randint(0, height)
 
         # Random radius and color
-        max_radius = random.randint(300, 600)
+        max_radius = random.randint(600, 1200)  # Adjusted for larger image
         color = random.choice(color_list)
         color_rgba = tuple(int(color.lstrip('#')[i:i+2], 16) for i in (0, 2, 4)) + (255,)
 
         # Draw radial gradient
         overlay = Image.new("RGBA", (width, height), (0, 0, 0, 0))
         overlay_draw = ImageDraw.Draw(overlay)
-        for r in range(max_radius, 0, -10):  # Gradual fade
+        for r in range(max_radius, 0, -20):  # Gradual fade, adjusted for larger image
             alpha = int((r / max_radius) * 255)
             overlay_draw.ellipse(
                 (center_x - r, center_y - r, center_x + r, center_y + r),
@@ -85,21 +85,19 @@ def generate_gradient(text, dark_mode, output_file):
     ellipse_y2 = height + (ellipse_height // 2)
     mask_draw.ellipse((ellipse_x1, ellipse_y1, ellipse_x2, ellipse_y2), fill=255)
 
-    # Apply the mask to the gradient
-    masked_gradient_color = (*background_color, 0)  # Add transparency (alpha = 0)
-    masked_gradient = Image.composite(gradient_layer, Image.new("RGBA", (width, height), masked_gradient_color), mask)
+    masked_gradient = Image.composite(gradient_layer, Image.new("RGBA", (width, height), (0, 0, 0, 0)), mask)
 
     # 4. Blur the masked gradient for a glow effect
-    blurred_gradient = masked_gradient.filter(ImageFilter.GaussianBlur(100))
+    blurred_gradient = masked_gradient.filter(ImageFilter.GaussianBlur(300))  # Adjusted for larger image
 
     # 5. Composite the blurred gradient onto the solid background
     final_layer = Image.alpha_composite(base_image.convert("RGBA"), blurred_gradient)
 
     # 6. Add text on top
     try:
-        font = ImageFont.truetype("Inter-Bold.ttf", 72)
+        font = ImageFont.truetype("assets/Inter-Bold.ttf", 144)  # Adjusted for larger image
     except IOError:
-        print("Font not found. Ensure 'Inter-Bold.ttf' is in the project directory.")
+        print("Font not found. Ensure 'Inter-Bold.ttf' is in the assets directory.")
         return
 
     # Calculate text positioning and tracking
@@ -122,7 +120,7 @@ def generate_gradient(text, dark_mode, output_file):
     # 7. Add grain effect
     noise = np.random.normal(0, 25, (height, width, 3)).astype(np.uint8)
     noise_image = Image.fromarray(noise, 'RGB')
-    final_image = Image.blend(final_layer.convert("RGB"), noise_image, 0.05)
+    final_image = Image.blend(final_layer.convert("RGB"), noise_image, 0.1)
 
-    # Save the final image
-    final_image.save(output_file)
+    # Save the final image with 300 DPI
+    final_image.save(output_file, dpi=(300, 300))
