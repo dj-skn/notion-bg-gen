@@ -122,5 +122,6 @@ def generate_gradient(text, dark_mode, output_file):
     noise_image = Image.fromarray(noise, 'RGB')
     final_image = Image.blend(final_layer.convert("RGB"), noise_image, 0.1)
 
-    # Save the final image with 300 DPI
-    final_image.save(output_file, dpi=(300, 300))
+    # Save the final image as JPG with reduced size
+    output_file = output_file.replace(".png", ".jpg")
+    final_image.save(output_file, format="JPEG", quality=100)  # Adjust quality to balance size and quality
