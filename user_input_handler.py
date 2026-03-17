@@ -47,7 +47,10 @@ def get_user_input():
             validate=lambda _, x: x.isdigit() and int(x) > 0,
         )
     ]
-    num_covers = int(inquirer.prompt(num_covers_question, theme=GreenPassion())["num_covers"])
+    num_covers_answer = inquirer.prompt(num_covers_question, theme=GreenPassion())
+    if num_covers_answer is None:
+        raise SystemExit("Operation cancelled by user.")
+    num_covers = int(num_covers_answer["num_covers"])
 
     # Ask for background mode (dark/light)
     mode_question = [
@@ -58,7 +61,10 @@ def get_user_input():
             default="Dark",
         )
     ]
-    dark_mode = inquirer.prompt(mode_question, theme=GreenPassion())["dark_mode"] == "Dark"
+    mode_answer = inquirer.prompt(mode_question, theme=GreenPassion())
+    if mode_answer is None:
+        raise SystemExit("Operation cancelled by user.")
+    dark_mode = mode_answer["dark_mode"] == "Dark"
 
     # Ask if the user wants custom output names
     custom_name_question = [
@@ -69,7 +75,10 @@ def get_user_input():
             default="No",
         )
     ]
-    use_custom_name = inquirer.prompt(custom_name_question, theme=GreenPassion())["custom_name"] == "Yes"
+    custom_name_answer = inquirer.prompt(custom_name_question, theme=GreenPassion())
+    if custom_name_answer is None:
+        raise SystemExit("Operation cancelled by user.")
+    use_custom_name = custom_name_answer["custom_name"] == "Yes"
 
     # Get base name if custom output name is selected
     if use_custom_name:
