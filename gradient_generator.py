@@ -11,7 +11,7 @@ def load_colors():
     Returns:
         dict: A dictionary containing color lists for dark and light modes and base colors.
     """
-    assets_dir = "assets"
+    assets_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
     colors_file = os.path.join(assets_dir, "colors.json")
 
     if not os.path.exists(colors_file):
@@ -94,8 +94,9 @@ def generate_gradient(text, dark_mode, output_file):
     final_layer = Image.alpha_composite(base_image.convert("RGBA"), blurred_gradient)
 
     # 6. Add text on top
+    font_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "Inter-Bold.ttf")
     try:
-        font = ImageFont.truetype("assets/Inter-Bold.ttf", 144)  # Adjusted for larger image
+        font = ImageFont.truetype(font_path, 144)  # Adjusted for larger image
     except IOError:
         print("Font not found. Ensure 'Inter-Bold.ttf' is in the assets directory.")
         return
@@ -104,10 +105,11 @@ def generate_gradient(text, dark_mode, output_file):
     draw = ImageDraw.Draw(final_layer)
     tracking_adjustment = -3  # Negative value to reduce spacing between letters (tracking-tight)
     total_width = sum(
-        [draw.textbbox((0, 0), char, font=font)[2] for char in text]
+        [cb[2] - cb[0] for cb in [draw.textbbox((0, 0), char, font=font) for char in text]]
     ) + tracking_adjustment * (len(text) - 1)
     text_x = (width - total_width) // 2
-    text_y = (height - draw.textbbox((0, 0), text, font=font)[3]) // 2
+    text_bbox = draw.textbbox((0, 0), text, font=font)
+    text_y = (height - (text_bbox[3] - text_bbox[1])) // 2
 
     # Draw each character with adjusted tracking
     x = text_x
@@ -118,7 +120,7 @@ def generate_gradient(text, dark_mode, output_file):
         x += char_width + tracking_adjustment  # Move x forward with tracking adjustment
 
     # 7. Add grain effect
-    noise = np.random.normal(0, 25, (height, width, 3)).astype(np.uint8)
+    noise = np.clip(np.random.normal(128, 25, (height, width, 3)), 0, 255).astype(np.uint8)
     noise_image = Image.fromarray(noise, 'RGB')
     final_image = Image.blend(final_layer.convert("RGB"), noise_image, 0.1)
 
