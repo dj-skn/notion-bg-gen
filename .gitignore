@@ -2,4 +2,7 @@
 /backgrounds/
 
 # Exclude the virtual environment directory
-/venv/.DS_Store
+/venv/
+
+# Exclude macOS Finder metadata
+.DS_Store
