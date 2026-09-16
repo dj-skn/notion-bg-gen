@@ -1,0 +1,70 @@
+site_name: notion-bg-gen
+site_description: Mesh-gradient cover images for Notion pages, from a terminal UI or a one-line command.
+site_url: https://dj-skn.github.io/notion-bg-gen/
+repo_url: https://github.com/dj-skn/notion-bg-gen
+repo_name: dj-skn/notion-bg-gen
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  features:
+    - navigation.instant
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - content.action.edit
+    - search.suggest
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: black
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Quickstart: quickstart.md
+  - CLI reference: cli.md
+  - Configuration: configuration.md
+  - Automation and agents: automation.md
+  - Troubleshooting: troubleshooting.md
+  - Changelog: changelog.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - pymdownx.keys
+  # Lets docs/changelog.md include the real CHANGELOG.md instead of copying it.
+  - pymdownx.snippets:
+      base_path: ['.']
+      check_paths: true
+
+plugins:
+  - search
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/dj-skn/notion-bg-gen
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/notion-bg-gen/

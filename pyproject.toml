@@ -1,0 +1,105 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "notion-bg-gen"
+version = "1.0.0"
+description = "Generate mesh-gradient cover images for Notion pages, from a terminal UI or a scriptable CLI."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE", "NOTICE", "src/notion_bg_gen/data/Inter-LICENSE.txt"]
+requires-python = ">=3.10"
+authors = [{ name = "Jan Halczuk" }]
+keywords = ["notion", "cover", "gradient", "cli", "tui", "generative-art", "image"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Multimedia :: Graphics",
+    "Typing :: Typed",
+]
+dependencies = [
+    "pillow>=10.0",
+    "numpy>=1.24",
+    "typer>=0.12",
+    "rich>=13.7",
+    "textual>=0.79",
+    "platformdirs>=4.0",
+    "tomli>=2.0; python_version < '3.11'",
+]
+
+[project.urls]
+Homepage = "https://github.com/dj-skn/notion-bg-gen"
+Documentation = "https://dj-skn.github.io/notion-bg-gen/"
+Repository = "https://github.com/dj-skn/notion-bg-gen"
+Issues = "https://github.com/dj-skn/notion-bg-gen/issues"
+Changelog = "https://github.com/dj-skn/notion-bg-gen/blob/main/CHANGELOG.md"
+
+[project.scripts]
+notion-bg = "notion_bg_gen.cli:main"
+notion-bg-gen = "notion_bg_gen.cli:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "pytest-asyncio>=0.24",
+    "ruff>=0.6",
+    "mypy>=1.11",
+]
+docs = [
+    "mkdocs-material>=9.5",
+    "mkdocs-click>=0.8",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/notion_bg_gen"]
+artifacts = ["src/notion_bg_gen/py.typed"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/src", "/tests", "/README.md", "/LICENSE", "/NOTICE", "/CHANGELOG.md"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM", "RUF", "PTH", "A"]
+# B008: Typer declares defaults via function calls in signatures.
+# RUF001: size strings accept a typographic multiplication sign on purpose.
+ignore = ["B008", "RUF012", "RUF001"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E501"]
+
+[tool.mypy]
+# No python_version pin: numpy's bundled stubs use 3.12 syntax, and pinning an
+# older version makes mypy fail while parsing them. Ruff's target-version is
+# what enforces the 3.10 floor.
+strict = true
+warn_unreachable = true
+files = ["src/notion_bg_gen"]
+
+[[tool.mypy.overrides]]
+# tomli is only installed on 3.10; on newer interpreters tomllib is used instead.
+module = ["PIL.*", "tomli.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+markers = ["slow: marks slow rendering tests"]
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+source = ["notion_bg_gen"]
+branch = true

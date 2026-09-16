@@ -1,8 +1,34 @@
-# Exclude all files in the backgrounds folder
+# Generated covers (default output directory)
+/covers/
 /backgrounds/
 
-# Exclude the virtual environment directory
-/venv/
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
 
-# Exclude macOS Finder metadata
+# Environments
+.venv/
+venv/
+env/
+
+# Tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Test output
+tests/**/_output/
+tests/**/*.actual.png
+
+# macOS
 .DS_Store
+
+# MkDocs build output
+/site/

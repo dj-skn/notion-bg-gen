@@ -1,0 +1,66 @@
+# Built-in palettes and themes for notion-bg-gen.
+#
+# A palette supplies the accent colours used to build the gradient. A theme
+# supplies the page background and headline colour. Any palette can be paired
+# with any theme.
+#
+# To add your own, run `notion-bg config edit` and append a [palettes.<id>]
+# table with the same shape as the ones below. User palettes are merged over
+# these, so redefining a built-in id overrides it.
+
+[themes.dark]
+background = "#09090b"
+text = "#fafafa"
+
+[themes.light]
+background = "#fafafa"
+text = "#09090b"
+
+[palettes.classic]
+name = "Classic"
+description = "The original mesh - saturated primaries across the full spectrum."
+colors = [
+    "#FF4500", "#FF6347", "#FF8C00", "#FFA500", "#FFD700",
+    "#00FA9A", "#32CD32", "#00CED1", "#4682B4", "#1E90FF",
+    "#6A5ACD", "#9400D3", "#FF1493", "#C71585", "#800000",
+]
+colors_light = [
+    "#FF5F1F", "#FFAA00", "#FFE600", "#FF3F81", "#FF6FFF",
+    "#60FF7E", "#00D4FF", "#00A1FF", "#5A00FF", "#FF007C",
+    "#FFD700", "#20C1FF", "#FF8E00", "#CF00FF", "#30FF1A",
+]
+
+[palettes.sunset]
+name = "Sunset"
+description = "Warm dusk - amber, coral and deep magenta."
+colors = ["#FF7A00", "#FF4D4D", "#FF2E63", "#C9184A", "#7B2CBF", "#FFB703", "#FB8500"]
+
+[palettes.ocean]
+name = "Ocean"
+description = "Cool depths - teal, cobalt and a green shallow."
+colors = ["#00B4D8", "#0077B6", "#023E8A", "#48CAE4", "#00F5D4", "#0096C7", "#03045E"]
+
+[palettes.candy]
+name = "Candy"
+description = "High-sugar pastels with a neon edge."
+colors = ["#FF6FD8", "#B892FF", "#6EE7F9", "#FFD166", "#FF85A1", "#A0FFB0", "#C77DFF"]
+
+[palettes.forest]
+name = "Forest"
+description = "Moss, fern and pine with a touch of moss."
+colors = ["#2D6A4F", "#40916C", "#52B788", "#74C69D", "#95D5B2", "#1B4332", "#B7E4C7"]
+
+[palettes.ember]
+name = "Ember"
+description = "Low embers - rust, brick and charred orange."
+colors = ["#7F1D1D", "#B91C1C", "#DC2626", "#EA580C", "#F59E0B", "#991B1B", "#C2410C"]
+
+[palettes.lavender]
+name = "Lavender"
+description = "Soft violets drifting into periwinkle."
+colors = ["#7C3AED", "#A78BFA", "#C4B5FD", "#818CF8", "#6366F1", "#DDD6FE", "#8B5CF6"]
+
+[palettes.mono]
+name = "Mono"
+description = "Neutral greys - the quiet option for dense pages."
+colors = ["#71717A", "#A1A1AA", "#52525B", "#D4D4D8", "#3F3F46", "#8B8B93", "#27272A"]

@@ -1,0 +1,10 @@
+notion-bg-gen
+Copyright (c) 2024 Jan Halczuk
+Licensed under the MIT License. See LICENSE.
+
+This distribution bundles the Inter typeface:
+
+  Inter - Copyright (c) 2016 The Inter Project Authors
+  https://github.com/rsms/inter
+  Licensed under the SIL Open Font License, Version 1.1.
+  Full text: src/notion_bg_gen/data/Inter-LICENSE.txt
