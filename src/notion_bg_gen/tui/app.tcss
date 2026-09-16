@@ -1,0 +1,66 @@
+Screen {
+    layers: base;
+    background: $surface;
+}
+
+#body {
+    height: 1fr;
+}
+
+#controls {
+    width: 42;
+    padding: 1 2;
+    border-right: solid $panel-lighten-2;
+}
+
+#stage {
+    width: 1fr;
+    padding: 1 2;
+}
+
+.field-label {
+    color: $text-muted;
+    text-style: bold;
+    margin-top: 1;
+}
+
+.field-label-first {
+    color: $text-muted;
+    text-style: bold;
+}
+
+#preview-frame {
+    height: 1fr;
+    border: round $panel-lighten-2;
+    padding: 1 2;
+    align: center middle;
+}
+
+#preview {
+    width: auto;
+    height: auto;
+}
+
+#status {
+    height: auto;
+    padding: 1 0 0 0;
+    color: $text-muted;
+}
+
+#actions {
+    height: auto;
+    padding-top: 1;
+}
+
+#actions Button {
+    width: 1fr;
+    margin-right: 1;
+}
+
+Input {
+    margin-bottom: 0;
+}
+
+Select {
+    margin-bottom: 0;
+}
