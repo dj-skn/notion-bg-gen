@@ -3,6 +3,10 @@
 from __future__ import annotations
 
 import json
+import os
+import pathlib
+import subprocess
+import sys
 
 import pytest
 from typer.testing import CliRunner
@@ -237,3 +241,95 @@ def test_config_path_prints_a_path():
 
 def test_config_show_without_a_file_is_not_an_error():
     assert run("config", "show").exit_code == 0
+
+
+# -- output integrity ------------------------------------------------------
+#
+# Regressions found by CI: JSON was emitted through Rich, which colourises when
+# FORCE_COLOR is set and soft-wraps at the terminal width, and which treats
+# square brackets as markup.
+#
+# These run the CLI as a subprocess rather than through CliRunner. Rich reads
+# FORCE_COLOR when the Console is constructed at import time, so setting the
+# variable inside an already-imported process proves nothing - the in-process
+# version of this test passed against the broken code.
+
+
+def run_subprocess(*args, env_extra=None, cwd=None):
+    env = {**os.environ, **(env_extra or {})}
+    env.pop("NO_COLOR", None)
+    return subprocess.run(
+        [sys.executable, "-m", "notion_bg_gen", *args],
+        capture_output=True,
+        text=True,
+        env=env,
+        cwd=cwd,
+        check=False,
+    )
+
+
+@pytest.mark.parametrize("command", [("palettes", "--json"), ("styles", "--json")])
+def test_json_is_plain_even_with_force_color(command):
+    """FORCE_COLOR must not put ANSI escapes in front of machine output."""
+    result = run_subprocess(*command, env_extra={"FORCE_COLOR": "1"})
+
+    assert result.returncode == 0, result.stderr
+    assert "\x1b[" not in result.stdout
+    json.loads(result.stdout)
+
+
+def test_generate_json_is_plain_even_with_force_color(tmp_path):
+    result = run_subprocess(
+        "generate",
+        "Hi",
+        "-o",
+        str(tmp_path),
+        "--json",
+        "--size",
+        "300x120",
+        env_extra={"FORCE_COLOR": "1"},
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "\x1b[" not in result.stdout
+    assert json.loads(result.stdout)["count"] == 1
+
+
+def test_json_is_not_wrapped_in_a_narrow_terminal(tmp_path):
+    """A long path must not gain a newline because the terminal is 40 columns."""
+    deep = tmp_path / ("nested-" * 8)
+    result = run_subprocess(
+        "generate",
+        "A Fairly Long Headline Here",
+        "-o",
+        str(deep),
+        "--json",
+        "--size",
+        "300x120",
+        env_extra={"COLUMNS": "40", "FORCE_COLOR": "1"},
+    )
+
+    assert result.returncode == 0, result.stderr
+    payload = json.loads(result.stdout)
+    assert pathlib.Path(payload["covers"][0]["path"]).is_file()
+
+
+def test_config_show_does_not_eat_toml_table_headers(tmp_path, monkeypatch):
+    """Rich read `[palettes.brand]` as a style tag and dropped the line."""
+    config = tmp_path / "config.toml"
+    body = '[palettes.brand]\nname = "Brand"\ncolors = ["#000000"]\n'
+    config.write_text(body, encoding="utf-8")
+    monkeypatch.setattr("notion_bg_gen.cli.config_path", lambda: config)
+
+    result = run("config", "show")
+
+    assert result.exit_code == 0
+    assert "[palettes.brand]" in result.stdout
+    assert result.stdout.strip() == body.strip()
+
+
+def test_config_path_is_plain():
+    result = run_subprocess("config", "path", env_extra={"FORCE_COLOR": "1"})
+    assert result.returncode == 0, result.stderr
+    assert "\x1b[" not in result.stdout
+    assert result.stdout.strip().endswith("config.toml")
