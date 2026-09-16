@@ -38,6 +38,23 @@ err = Console(stderr=True)
 out = Console()
 
 
+def emit_data(text: str) -> None:
+    """Write machine-consumable or verbatim text to stdout, untouched.
+
+    Deliberately not Rich. Rich colourises when FORCE_COLOR is set (CI runners
+    commonly set it), soft-wraps at the terminal width, and interprets square
+    brackets as markup - which silently swallowed TOML table headers such as
+    `[palettes.brand]` in `config show`. Any of those turn valid output into
+    something a caller cannot parse or a person cannot trust.
+    """
+    sys.stdout.write(text if text.endswith("\n") else text + "\n")
+
+
+def emit_json(payload: object) -> None:
+    """Write a JSON document to stdout and nothing else."""
+    emit_data(json.dumps(payload, indent=2))
+
+
 class ErrorHandlingGroup(TyperGroup):
     """Turn our exceptions into tidy messages and exit codes.
 
@@ -258,7 +275,7 @@ def generate(
             results.append(record)
 
     if as_json:
-        out.print_json(json.dumps({"covers": results, "count": len(results)}))
+        emit_json({"covers": results, "count": len(results)})
     elif not quiet:
         verb = "Would generate" if dry_run else "Generated"
         err.print(f"[green]{verb} {len(results)} cover(s)[/green] in [bold]{output_dir}[/bold]")
@@ -281,7 +298,7 @@ def palettes(
             }
             for p in registry.values()
         ]
-        out.print_json(json.dumps({"palettes": payload}))
+        emit_json({"palettes": payload})
         return
 
     table = Table(title="Palettes", title_justify="left", header_style="bold")
@@ -302,7 +319,7 @@ def styles(
     """List available gradient styles."""
     if as_json:
         payload = [{"id": k, "description": v} for k, v in STYLE_DESCRIPTIONS.items()]
-        out.print_json(json.dumps({"styles": payload}))
+        emit_json({"styles": payload})
         return
 
     table = Table(title="Styles", title_justify="left", header_style="bold")
@@ -328,7 +345,7 @@ app.add_typer(config_app, name="config")
 @config_app.command("path")
 def config_path_cmd() -> None:
     """Print the path to the config file."""
-    out.print(str(config_path()))
+    emit_data(str(config_path()))
 
 
 @config_app.command("show")
@@ -338,7 +355,7 @@ def config_show() -> None:
     if not path.is_file():
         err.print(f"[dim]No config yet at {path}. Run `notion-bg config edit` to create one.[/dim]")
         raise typer.Exit(0)
-    out.print(path.read_text(encoding="utf-8"))
+    emit_data(path.read_text(encoding="utf-8"))
 
 
 @config_app.command("edit")
