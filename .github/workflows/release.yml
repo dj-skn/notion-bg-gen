@@ -31,12 +31,12 @@ jobs:
       - name: Confirm the tag matches the packaged version
         run: |
           TAG="${GITHUB_REF_NAME#v}"
-          VERSION=$(uvx --from hatchling hatchling version 2>/dev/null || \
-                    grep -m1 '^version' pyproject.toml | cut -d'"' -f2)
+          VERSION=$(grep -m1 '^version' pyproject.toml | cut -d'"' -f2)
           if [ "$TAG" != "$VERSION" ]; then
             echo "Tag $TAG does not match project version $VERSION"
             exit 1
           fi
+          echo "Releasing $VERSION"
 
       - uses: actions/upload-artifact@v4
         with:
