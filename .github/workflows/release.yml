@@ -130,7 +130,10 @@ jobs:
 
   github_release:
     name: Attach binaries to the release
-    needs: [pypi, binaries]
+    needs: [binaries, pypi]
+    # Runs even if the PyPI step failed. The binaries are already built, and a
+    # publishing problem should not also cost the user their GitHub release.
+    if: ${{ always() && needs.binaries.result == 'success' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -155,15 +158,20 @@ jobs:
 
   homebrew:
     name: Bump the Homebrew tap
-    needs: github_release
+    needs: [pypi, github_release]
     runs-on: ubuntu-latest
-    # Requires a dj-skn/homebrew-tap repository and a HOMEBREW_TAP_TOKEN secret
-    # with contents:write on it. Skipped automatically until both exist.
-    if: ${{ github.event_name == 'push' }}
+    # The formula points at the PyPI sdist, so this only makes sense once the
+    # publish succeeded. Requires a dj-skn/homebrew-tap repository and a
+    # HOMEBREW_TAP_TOKEN secret with contents:write on it; skipped until both
+    # exist rather than failing the release.
+    if: ${{ github.event_name == 'push' && needs.pypi.result == 'success' }}
     steps:
-      - name: Check for the tap token
+      - name: Work out the version and check for the tap token
         id: guard
         run: |
+          # The tag is v1.2.3 but the sdist is notion_bg_gen-1.2.3.tar.gz.
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           if [ -n "${{ secrets.HOMEBREW_TAP_TOKEN }}" ]; then
             echo "ready=true" >> "$GITHUB_OUTPUT"
           else
@@ -178,6 +186,6 @@ jobs:
           formula-name: notion-bg
           formula-path: Formula/notion-bg.rb
           homebrew-tap: dj-skn/homebrew-tap
-          download-url: https://files.pythonhosted.org/packages/source/n/notion-bg-gen/notion_bg_gen-${{ github.ref_name }}.tar.gz
+          download-url: https://files.pythonhosted.org/packages/source/n/notion-bg-gen/notion_bg_gen-${{ steps.guard.outputs.version }}.tar.gz
         env:
           COMMITTER_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
