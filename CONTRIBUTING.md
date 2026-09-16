@@ -82,3 +82,14 @@ Maintainers only:
 The release workflow builds the distributions, publishes to PyPI through trusted
 publishing, builds the standalone binaries, attaches them to the GitHub release
 and bumps the Homebrew formula.
+
+The Homebrew bump only updates the formula's URL and sha256, not its dependency
+pins. If a release changes dependencies, regenerate the formula once the version
+is on PyPI and commit it to [homebrew-tap](https://github.com/dj-skn/homebrew-tap):
+
+```bash
+python packaging/homebrew/generate_formula.py 1.2.3 > ../homebrew-tap/Formula/notion-bg.rb
+```
+
+numpy and Pillow are deliberately Homebrew dependencies rather than resources;
+the script explains why.
