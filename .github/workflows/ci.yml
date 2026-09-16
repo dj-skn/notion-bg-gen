@@ -25,20 +25,21 @@ jobs:
         with:
           enable-cache: true
 
-      - name: Set up Python
-        run: uv python install 3.13
-
+      # A venv rather than --system: the runner's Python is Debian-managed and
+      # refuses system-wide installs under PEP 668.
       - name: Install
-        run: uv pip install --system -e ".[dev]"
+        run: |
+          uv venv --python 3.13
+          uv pip install -e ".[dev]"
 
       - name: Ruff (lint)
-        run: ruff check --output-format=github .
+        run: uv run ruff check --output-format=github .
 
       - name: Ruff (format)
-        run: ruff format --check .
+        run: uv run ruff format --check .
 
       - name: Mypy
-        run: mypy
+        run: uv run mypy
 
   test:
     name: Test ${{ matrix.python }} on ${{ matrix.os }}
@@ -63,14 +64,13 @@ jobs:
         with:
           enable-cache: true
 
-      - name: Set up Python
-        run: uv python install ${{ matrix.python }}
-
       - name: Install
-        run: uv pip install --system -e ".[dev]"
+        run: |
+          uv venv --python ${{ matrix.python }}
+          uv pip install -e ".[dev]"
 
       - name: Test
-        run: pytest --cov --cov-report=xml --cov-report=term-missing
+        run: uv run pytest --cov --cov-report=xml --cov-report=term-missing
 
       - name: Upload coverage
         if: matrix.os == 'ubuntu-latest' && matrix.python == '3.13'
@@ -88,35 +88,23 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v5
 
-      - name: Set up Python
-        run: uv python install 3.13
-
-      - name: Install
-        run: uv pip install --system .
+      - name: Install from the built package
+        run: |
+          uv venv --python 3.13
+          uv pip install .
 
       - name: Generate a cover and check the JSON contract
         run: |
-          notion-bg --version
-          notion-bg palettes --json > palettes.json
-          notion-bg styles --json > styles.json
-          notion-bg generate "CI Smoke Test" --size cover --seed 1 --json > result.json
-          python - <<'PY'
-          import json, pathlib
-          result = json.loads(pathlib.Path("result.json").read_text())
-          cover = result["covers"][0]
-          assert result["count"] == 1, result
-          assert cover["seed"] == 1, cover
-          assert cover["written"] is True, cover
-          assert pathlib.Path(cover["path"]).is_file(), cover
-          assert json.loads(pathlib.Path("palettes.json").read_text())["palettes"], "no palettes"
-          assert json.loads(pathlib.Path("styles.json").read_text())["styles"], "no styles"
-          print("CLI contract OK:", cover["path"], cover["bytes"], "bytes")
-          PY
+          uv run notion-bg --version
+          uv run notion-bg palettes --json > palettes.json
+          uv run notion-bg styles --json > styles.json
+          uv run notion-bg generate "CI Smoke Test" --size cover --seed 1 --json > result.json
+          uv run python .github/scripts/check_contract.py
 
       - name: A bare invocation must not open the UI when there is no terminal
         run: |
           set +e
-          notion-bg < /dev/null > out.txt 2>&1
+          uv run notion-bg < /dev/null > out.txt 2>&1
           code=$?
           set -e
           test "$code" -eq 2 || { echo "expected exit 2, got $code"; cat out.txt; exit 1; }

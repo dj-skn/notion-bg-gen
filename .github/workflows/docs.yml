@@ -24,14 +24,15 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v5
 
-      - name: Set up Python
-        run: uv python install 3.13
-
+      # A venv rather than --system: the runner's Python is Debian-managed and
+      # refuses system-wide installs under PEP 668.
       - name: Install
-        run: uv pip install --system -e ".[docs]"
+        run: |
+          uv venv --python 3.13
+          uv pip install -e ".[docs]"
 
       - name: Build
-        run: mkdocs build --strict
+        run: uv run mkdocs build --strict
 
       - uses: actions/upload-pages-artifact@v3
         with:
