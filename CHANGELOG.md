@@ -6,6 +6,24 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-09-17
+
+### Fixed
+
+- `notion-bg ui` hung indefinitely when there was no interactive terminal. It
+  started the UI regardless, wrote escape sequences into the pipe and waited on
+  input that could not arrive, so a script or CI job stalled instead of failing.
+  It now exits 2 with an explanation, matching what a bare `notion-bg` already
+  did.
+
+### Changed
+
+- The standalone binaries are smaller. `--collect-all textual` was pulling in
+  metadata and binaries it does not need at runtime, nothing was stripped, and
+  build machinery and GUI toolkits were being bundled. The release now also
+  smoke-tests every style and output format against the frozen binary, since
+  trimming is what would break the bundled font and palette data.
+
 ## [1.0.0] - 2026-09-16
 
 The project becomes an installable tool with a terminal UI, a scriptable CLI,
@@ -82,5 +100,6 @@ and a test suite. Previously it was three scripts run from a git clone.
   `requirements.txt`, replaced by the `notion_bg_gen` package and
   `pyproject.toml`.
 
-[Unreleased]: https://github.com/dj-skn/notion-bg-gen/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/dj-skn/notion-bg-gen/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/dj-skn/notion-bg-gen/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/dj-skn/notion-bg-gen/releases/tag/v1.0.0
