@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "notion-bg-gen"
-version = "1.0.0"
+version = "1.0.1"
 description = "Generate mesh-gradient cover images for Notion pages, from a terminal UI or a scriptable CLI."
 readme = "README.md"
 license = "MIT"

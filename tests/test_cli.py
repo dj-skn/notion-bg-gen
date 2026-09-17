@@ -333,3 +333,24 @@ def test_config_path_is_plain():
     assert result.returncode == 0, result.stderr
     assert "\x1b[" not in result.stdout
     assert result.stdout.strip().endswith("config.toml")
+
+
+def test_ui_refuses_without_a_terminal_instead_of_hanging():
+    """Regression: `ui` started Textual anyway and blocked forever.
+
+    It wrote escape sequences into the pipe and waited on input that could not
+    arrive, so a script or CI job hung rather than failing. The timeout is the
+    real assertion here.
+    """
+    result = subprocess.run(
+        [sys.executable, "-m", "notion_bg_gen", "ui"],
+        stdin=subprocess.DEVNULL,
+        capture_output=True,
+        text=True,
+        timeout=60,
+        check=False,
+    )
+
+    assert result.returncode == 2, result.stderr
+    assert "\x1b[" not in result.stdout
+    assert "interactive terminal" in result.stderr

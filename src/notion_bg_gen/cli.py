@@ -84,6 +84,11 @@ app = typer.Typer(
 )
 
 
+def _interactive_terminal() -> bool:
+    """Whether a full-screen UI can be drawn and driven here."""
+    return sys.stdout.isatty() and sys.stdin.isatty()
+
+
 def _version_callback(value: bool) -> None:
     if value:
         typer.echo(f"notion-bg {__version__}")
@@ -107,7 +112,7 @@ def cli(
         return
 
     # No subcommand: hand a person the UI, hand everything else the help text.
-    if sys.stdout.isatty() and sys.stdin.isatty():
+    if _interactive_terminal():
         from .tui.app import run_tui
 
         raise typer.Exit(run_tui())
@@ -120,6 +125,15 @@ def cli(
 @app.command()
 def ui() -> None:
     """Open the interactive terminal UI."""
+    # Without this guard Textual starts anyway, writes escape sequences into the
+    # pipe and waits for input that never arrives, so a script or CI job hangs
+    # indefinitely instead of failing.
+    if not _interactive_terminal():
+        raise UsageError(
+            "The terminal UI needs an interactive terminal, and this is not one.",
+            hint="Use `notion-bg generate` in scripts, pipes and CI.",
+        )
+
     from .tui.app import run_tui
 
     raise typer.Exit(run_tui())
